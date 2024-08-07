@@ -1,9 +1,11 @@
 services:
+
+# backend service
   backend:
     build:
       args:
       - NODE_ENV=development
-      context: backend
+      context: backend # points to backend sub folder
     command: npm run start-watch
     environment:
       - DATABASE_DB=example
@@ -22,14 +24,17 @@ services:
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
       - backend-modules:/opt/app/node_modules
-    networks:
+    networks: # backend service can communicate directly with both frontend and db services
       - public
-      - private
+      - private 
     depends_on:
       - db
     restart: unless-stopped
+
+
+# db service
   db:
-    image: mariadb:10.6.4-focal
+    image: mariadb:10.6.4-focal # pulls the db image from Docker Hub
     command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     secrets:
@@ -37,13 +42,16 @@ services:
     volumes:
       - db-data:/var/lib/mysql
     networks:
-      - private
+      - private # db service can communicate directly with backend service but not with frontend service
     environment:
       - MYSQL_DATABASE=example
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+
+
+# frontend service
   frontend:
     build:
-      context: frontend
+      context: frontend # points to frontend sub folder
       target: development
     ports:
       - 3000:3000
@@ -51,7 +59,7 @@ services:
       - ./frontend/src:/code/src
       - /code/node_modules
     networks:
-      - public
+      - public # frontend service can communicate directly with backend service but not with db service
     depends_on:
       - backend
     restart: unless-stopped

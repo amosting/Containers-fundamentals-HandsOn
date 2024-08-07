@@ -51,3 +51,4 @@ Detach from the instance:
     docker volume rm myvol
     docker stop voltest
     docker rm voltest
+- Must stop running container instance first before delete volume

@@ -62,3 +62,4 @@ How many versions do we have running?
     docker compose ls
     docker compose -p test down
     docker compose ls
+- If a name is not specified, `docker compose down` will use the shut down the 
